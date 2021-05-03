@@ -2,16 +2,19 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using WallpaperMaker.Services;
 
 namespace WallpaperMaker.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
+        private readonly SqliteAccess _access;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(ILogger<IndexModel> logger, SqliteAccess access)
         {
             _logger = logger;
+            _access = access;
         }
 
         public void OnGet()
@@ -41,6 +44,7 @@ namespace WallpaperMaker.Pages
             }
 
             // save to database
+            _access.Save(info);
         }
 
     }
