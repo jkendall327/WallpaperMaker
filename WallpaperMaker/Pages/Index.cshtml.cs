@@ -1,20 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Drawing;
 using System.IO;
-using WallpaperMaker.Services;
+using System.Threading.Tasks;
 
 namespace WallpaperMaker.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly SqliteAccess _access;
+        private readonly ImageModifier _converter;
 
-        public IndexModel(ILogger<IndexModel> logger, SqliteAccess access)
+        public IndexModel(ILogger<IndexModel> logger, ImageModifier converter)
         {
             _logger = logger;
-            _access = access;
+            _converter = converter;
         }
 
         public void OnGet()
@@ -22,29 +24,29 @@ namespace WallpaperMaker.Pages
 
         }
 
-        public void OnPost(IFormFile file)
+        public async Task<IActionResult> OnPostAsync(IFormFile file)
         {
             _logger.LogDebug($"File loaded: {file.FileName}");
 
-            // check if image
-
             var info = new FileInfo(file.FileName);
 
-            var isImage = false;
-
-            if (info.Extension == ".jpg")
+            if (info.Extension.ToLower() == ".jpg")
             {
-                isImage = true;
+                Image image;
+
+                using (Stream fileStream = new FileStream(file.FileName, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+
+                    image = Image.FromStream(fileStream);
+                }
+
+                _converter.Convert(image);
+
+                return RedirectToPage("viewImage");
             }
 
-            if (!isImage)
-            {
-                throw new System.Exception();
-
-            }
-
-            // save to database
-            _access.Save(info);
+            return RedirectToPage("Privacy");
         }
 
     }
