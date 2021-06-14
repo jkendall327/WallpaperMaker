@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WallpaperMaker.Pages
@@ -12,11 +13,27 @@ namespace WallpaperMaker.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly ImageModifier _converter;
+        readonly string tempImgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp");
 
         public IndexModel(ILogger<IndexModel> logger, ImageModifier converter)
         {
             _logger = logger;
             _converter = converter;
+
+            Directory.CreateDirectory(Path.Combine("wwwroot", "temp"));
+        }
+
+        public void OnGet()
+        {
+            var temp = Directory.EnumerateFiles(tempImgPath);
+
+            if (temp.Any())
+            {
+                foreach (var file in temp)
+                {
+                    System.IO.File.Delete(file);
+                }
+            }
         }
 
         public async Task<IActionResult> OnPostAsync(IFormFile file)
@@ -38,12 +55,13 @@ namespace WallpaperMaker.Pages
 
                 var result = _converter.Convert(image);
 
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 var imgname = System.Guid.NewGuid() + ".jpg";
-                var imgpath = path + Path.DirectorySeparatorChar + imgname;
+                var imgpath = Path.Combine("wwwroot", "temp") + Path.DirectorySeparatorChar + imgname;
                 result.Save(imgpath);
 
-                return RedirectToPage("ViewImage", new { path = imgname });
+                System.IO.File.Delete(file.FileName);
+
+                return RedirectToPage("ViewImage", new { path = "temp" + Path.DirectorySeparatorChar + imgname });
             }
 
             return RedirectToPage();
