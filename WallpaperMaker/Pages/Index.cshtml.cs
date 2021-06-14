@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using System.Drawing;
+using SixLabors.ImageSharp;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,14 +44,7 @@ namespace WallpaperMaker.Pages
 
             if (info.Extension.ToLower() == ".jpg")
             {
-                Image image;
-
-                using (Stream fileStream = new FileStream(file.FileName, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-
-                    image = Image.FromStream(fileStream);
-                }
+                Image image = await Image.LoadAsync(file.OpenReadStream());
 
                 var result = _converter.Convert(image);
 
