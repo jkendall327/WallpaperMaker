@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WallpaperMaker.Pages;
-using WallpaperMaker.Services;
 
 namespace WallpaperMaker
 {
@@ -21,7 +20,6 @@ namespace WallpaperMaker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddSingleton<SqliteAccess>();
             services.AddSingleton<ImageModifier>();
 
         }
