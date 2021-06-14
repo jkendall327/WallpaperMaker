@@ -19,11 +19,6 @@ namespace WallpaperMaker.Pages
             _converter = converter;
         }
 
-        public void OnGet()
-        {
-
-        }
-
         public async Task<IActionResult> OnPostAsync(IFormFile file)
         {
             _logger.LogDebug($"File loaded: {file.FileName}");
@@ -41,13 +36,17 @@ namespace WallpaperMaker.Pages
                     image = Image.FromStream(fileStream);
                 }
 
-                _converter.Convert(image);
+                var result = _converter.Convert(image);
 
-                return RedirectToPage("viewImage");
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                var imgname = System.Guid.NewGuid() + ".jpg";
+                var imgpath = path + Path.DirectorySeparatorChar + imgname;
+                result.Save(imgpath);
+
+                return RedirectToPage("ViewImage", new { path = imgname });
             }
 
-            return RedirectToPage("Privacy");
+            return RedirectToPage();
         }
-
     }
 }
