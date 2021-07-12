@@ -45,20 +45,14 @@ namespace WallpaperMaker.Pages
         {
             _logger.LogDebug($"File loaded: {file.FileName}");
 
-            var info = new FileInfo(file.FileName);
+            if (!file.IsImage()) return RedirectToPage();
 
-            if (info.Extension.ToLower() == ".jpg")
-            {
-                Image image = await Image.LoadAsync(file.OpenReadStream());
+            Image image = await Image.LoadAsync(file.OpenReadStream());
 
-                var result = _converter.Convert(image);
+            var result = _converter.Convert(image);
+            var imageID = _imageStore.Store(result, file);
 
-                var imageID = _imageStore.Store(result, file);
-
-                return RedirectToPage("ViewImage", new { id = imageID });
-            }
-
-            return RedirectToPage();
+            return RedirectToPage("ViewImage", new { id = imageID });
         }
     }
 }
