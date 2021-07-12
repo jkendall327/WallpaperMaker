@@ -9,6 +9,7 @@ namespace WallpaperMaker.Services
     {
         Guid Store(Image image, IFormFile originalFile);
         Image Get(Guid imageID);
+        public string GetPath(Guid imageID);
     }
 
     public class ImageStore : IImageStore
