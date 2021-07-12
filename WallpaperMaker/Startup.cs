@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WallpaperMaker.Pages;
+using WallpaperMaker.Services;
 
 namespace WallpaperMaker
 {
@@ -21,7 +22,7 @@ namespace WallpaperMaker
         {
             services.AddRazorPages();
             services.AddSingleton<ImageModifier>();
-
+            services.AddSingleton<IImageStore, ImageStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

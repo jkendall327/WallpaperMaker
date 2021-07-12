@@ -1,4 +1,6 @@
+using System;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using WallpaperMaker.Services;
 
 namespace WallpaperMaker.Pages
 {
@@ -6,9 +8,13 @@ namespace WallpaperMaker.Pages
     {
         public string ImagePath { get; set; }
 
-        public void OnGet(string path)
+        private readonly IImageStore _imageStore;
+
+        public ViewImageModel(ImageStore imageStore) => _imageStore = imageStore;
+
+        public void OnGet(Guid id)
         {
-            ImagePath = path;
+            ImagePath = _imageStore.GetPath(id);
         }
     }
 }

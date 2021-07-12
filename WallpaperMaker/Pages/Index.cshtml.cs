@@ -6,6 +6,7 @@ using SixLabors.ImageSharp;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using WallpaperMaker.Services;
 
 namespace WallpaperMaker.Pages
 {
@@ -13,12 +14,16 @@ namespace WallpaperMaker.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly ImageModifier _converter;
+
+        private readonly IImageStore _imageStore;
+
         readonly string tempImgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp");
 
-        public IndexModel(ILogger<IndexModel> logger, ImageModifier converter)
+        public IndexModel(ILogger<IndexModel> logger, ImageModifier converter, ImageStore imageStore)
         {
             _logger = logger;
             _converter = converter;
+            _imageStore = imageStore;
 
             Directory.CreateDirectory(Path.Combine("wwwroot", "temp"));
         }
@@ -48,13 +53,9 @@ namespace WallpaperMaker.Pages
 
                 var result = _converter.Convert(image);
 
-                var imgname = System.Guid.NewGuid() + ".jpg";
-                var imgpath = Path.Combine("wwwroot", "temp") + Path.DirectorySeparatorChar + imgname;
-                result.Save(imgpath);
+                var imageID = _imageStore.Store(result, file);
 
-                System.IO.File.Delete(file.FileName);
-
-                return RedirectToPage("ViewImage", new { path = "temp" + Path.DirectorySeparatorChar + imgname });
+                return RedirectToPage("ViewImage", new { id = imageID });
             }
 
             return RedirectToPage();
