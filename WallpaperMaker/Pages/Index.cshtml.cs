@@ -19,7 +19,7 @@ namespace WallpaperMaker.Pages
 
         readonly string tempImgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp");
 
-        public IndexModel(ILogger<IndexModel> logger, ImageModifier converter, ImageStore imageStore)
+        public IndexModel(ILogger<IndexModel> logger, ImageModifier converter, IImageStore imageStore)
         {
             _logger = logger;
             _converter = converter;

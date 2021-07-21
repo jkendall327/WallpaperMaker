@@ -10,7 +10,7 @@ namespace WallpaperMaker.Pages
 
         private readonly IImageStore _imageStore;
 
-        public ViewImageModel(ImageStore imageStore) => _imageStore = imageStore;
+        public ViewImageModel(IImageStore imageStore) => _imageStore = imageStore;
 
         public void OnGet(Guid id)
         {
