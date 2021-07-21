@@ -3,21 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WallpaperMaker.Services;
+using static System.Net.WebRequestMethods;
 
 namespace WallpaperMaker.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly ImageModifier _converter;
 
+        private readonly ImageModifier _converter;
         private readonly IImageStore _imageStore;
 
-        readonly string tempImgPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp");
+        public bool ConvertButtonDisabled { get; set; } = true;
+        public string UploadedImageFilepath { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public Guid UploadedImageId { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public bool Convert { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, ImageModifier converter, IImageStore imageStore)
         {
@@ -28,31 +37,51 @@ namespace WallpaperMaker.Pages
             Directory.CreateDirectory(Path.Combine("wwwroot", "temp"));
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            var temp = Directory.EnumerateFiles(tempImgPath);
+            if (UploadedImageId == default) return Page();
 
-            if (temp.Any())
+            ConvertButtonDisabled = false;
+
+            if (Convert)
             {
-                foreach (var file in temp)
-                {
-                    System.IO.File.Delete(file);
-                }
+                UploadedImageId = ConvertImage(UploadedImageId);
+
+                ConvertButtonDisabled = true;
             }
+
+            UploadedImageFilepath = _imageStore.GetPath(UploadedImageId);
+
+            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(IFormFile file)
+        private Guid ConvertImage(Guid id)
         {
-            _logger.LogDebug($"File loaded: {file.FileName}");
+            var original = _imageStore.Get(id);
 
+            var result = _converter.Convert(original);
+
+            return _imageStore.Store(result);
+        }
+
+        public async Task<IActionResult> OnPostUpload(IFormFile file)
+        {
             if (!file.IsImage()) return RedirectToPage();
 
-            Image image = await Image.LoadAsync(file.OpenReadStream());
+            Guid imageID = await StoreUploadedImage(file);
 
-            var result = _converter.Convert(image);
-            var imageID = _imageStore.Store(result, file);
+            return RedirectToPage(new { UploadedImageId = imageID, Convert = false });
+        }
 
-            return RedirectToPage("ViewImage", new { id = imageID });
+        private async Task<Guid> StoreUploadedImage(IFormFile file)
+        {
+            var image = await Image.LoadAsync(file.OpenReadStream());
+            return _imageStore.Store(image, file);
+        }
+
+        public IActionResult OnPostConvert(Guid uploadedId)
+        {
+            return RedirectToPage(new { UploadedImageId = uploadedId, Convert = true });
         }
     }
 }

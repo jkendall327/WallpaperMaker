@@ -8,6 +8,7 @@ namespace WallpaperMaker.Services
     public interface IImageStore
     {
         Guid Store(Image image, IFormFile originalFile);
+        Guid Store(Image image);
         Image Get(Guid imageID);
         public string GetPath(Guid imageID);
     }
@@ -22,6 +23,15 @@ namespace WallpaperMaker.Services
 
             image.Save(ImagePath(guid));
             File.Delete(originalFile.FileName);
+
+            return guid;
+        }
+
+        public Guid Store(Image image)
+        {
+            var guid = Guid.NewGuid();
+
+            image.Save(ImagePath(guid));
 
             return guid;
         }
