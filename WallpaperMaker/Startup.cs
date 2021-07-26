@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -23,8 +24,11 @@ namespace WallpaperMaker
             services.AddRazorPages();
             services.AddControllers();
             services.AddHttpClient();
+
             services.AddSingleton<ImageModifier>();
             services.AddSingleton<IImageStore, ImageStore>();
+            services.AddSingleton<RandomPortionGenerator>();
+            services.AddSingleton(new Random());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
