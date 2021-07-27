@@ -21,6 +21,8 @@ namespace WallpaperMaker
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddControllers();
+            services.AddHttpClient();
             services.AddSingleton<ImageModifier>();
             services.AddSingleton<IImageStore, ImageStore>();
         }
@@ -49,6 +51,7 @@ namespace WallpaperMaker
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }
