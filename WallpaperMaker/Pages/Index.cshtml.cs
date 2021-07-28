@@ -68,15 +68,9 @@ namespace WallpaperMaker.Pages
         {
             if (!file.IsImage()) return RedirectToPage();
 
-            Guid imageID = await StoreUploadedImage(file);
+            Guid imageID = await _imageStore.Store(file);
 
             return RedirectToPage(new { UploadedImageId = imageID, Convert = false });
-        }
-
-        private async Task<Guid> StoreUploadedImage(IFormFile file)
-        {
-            var image = await Image.LoadAsync(file.OpenReadStream());
-            return _imageStore.Store(image, file);
         }
 
         public IActionResult OnPostConvert(Guid uploadedId)

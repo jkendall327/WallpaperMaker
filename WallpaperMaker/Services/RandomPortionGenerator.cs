@@ -14,36 +14,31 @@ namespace WallpaperMaker.Services
 
         public Rectangle GetRandomSubsection(Rectangle original)
         {
-            /*
-             * given rectangle of arbitrary size
-             * return a random sub-rectangle
-             * whose size is above some arbitrary
-             * percentage of the size of the original
-             */
-
-            var minPercent = 0.4;
-            var maxPercent = 0.7;
-
-            // https://stackoverflow.com/a/1064907
-            var widthPercentage = Random.NextDouble() * (maxPercent - minPercent) + minPercent;
-            var heightPercentage = Random.NextDouble() * (maxPercent - minPercent) + minPercent;
-
-            var originalBounds = original;
-
-            var finalWidth = (int)(originalBounds.Width * widthPercentage);
-            var finalHeight = (int)(originalBounds.Height * heightPercentage);
+            var newWidth = Calculate(original.Width);
+            var newHeight = Calculate(original.Height);
 
             var newRectangle = new Rectangle()
             {
-                Width = finalWidth,
-                Height = finalHeight,
+                Width = newWidth,
+                Height = newHeight,
 
                 // remember that y counts down...
-                X = Random.Next(0, original.Width - finalWidth),
-                Y = Random.Next(0, original.Height - finalHeight)
+                X = Random.Next(0, original.Width - newWidth),
+                Y = Random.Next(0, original.Height - newHeight)
             };
 
             return newRectangle;
+        }
+
+        private readonly double MinPercent = 0.4;
+        private readonly double MaxPercent = 0.7;
+
+        private int Calculate(int original)
+        {
+            // https://stackoverflow.com/a/1064907
+
+            var percentage = Random.NextDouble() * (MaxPercent - MinPercent) + MinPercent;
+            return (int)(original * percentage);
         }
     }
 }

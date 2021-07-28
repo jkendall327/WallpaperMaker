@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SixLabors.ImageSharp;
 
@@ -9,6 +10,7 @@ namespace WallpaperMaker.Services
     {
         Guid Store(Image image, IFormFile originalFile);
         Guid Store(Image image);
+        Task<Guid> Store(IFormFile file);
         Image Get(Guid imageID);
         public string GetPath(Guid imageID);
     }
@@ -16,6 +18,12 @@ namespace WallpaperMaker.Services
     public class ImageStore : IImageStore
     {
         private string ImagePath(Guid guid) => Path.Combine("wwwroot", "temp") + Path.DirectorySeparatorChar + guid + ".jpg";
+
+        public async Task<Guid> Store(IFormFile file)
+        {
+            var image = await Image.LoadAsync(file.OpenReadStream());
+            return Store(image, file);
+        }
 
         public Guid Store(Image image, IFormFile originalFile)
         {
