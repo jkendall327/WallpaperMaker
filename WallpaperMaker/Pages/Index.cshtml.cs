@@ -35,7 +35,7 @@ namespace WallpaperMaker.Pages
 
         public async Task<IActionResult> OnPostUpload(IFormFile file)
         {
-            if (file is null || !file.IsImage()) return Page();
+            if (file is null || !file.IsImage()) return RedirectToPage();
 
             Guid imageID = await _imageStore.Store(file);
 

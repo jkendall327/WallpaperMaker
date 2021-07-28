@@ -17,16 +17,7 @@ namespace WallpaperMaker.Tests
 
         public IndexTests()
         {
-            var services = new ServiceCollection();
-
-            services.AddSingleton<ImageModifier>();
-            services.AddSingleton<IImageStore, NullImageStore>();
-            services.AddSingleton<RandomPortionGenerator>();
-            services.AddSingleton(new Random());
-            services.AddSingleton<IndexModel>();
-            services.AddLogging();
-
-            _sut = services.BuildServiceProvider().GetRequiredService<IndexModel>();
+            _sut = new IndexModel(new NullImageStore());
         }
 
         [Fact]
