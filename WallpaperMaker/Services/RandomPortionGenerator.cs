@@ -14,8 +14,8 @@ namespace WallpaperMaker.Services
 
         public Rectangle GetRandomSubsection(Rectangle original)
         {
-            var newWidth = Calculate(original.Width);
-            var newHeight = Calculate(original.Height);
+            var newHeight = GetRandomPercentageOfValue(original.Height);
+            var newWidth = (int)(newHeight * original.AspectRatio());
 
             var newRectangle = new Rectangle()
             {
@@ -33,7 +33,7 @@ namespace WallpaperMaker.Services
         private readonly double MinPercent = 0.4;
         private readonly double MaxPercent = 0.7;
 
-        private int Calculate(int original)
+        private int GetRandomPercentageOfValue(int original)
         {
             // https://stackoverflow.com/a/1064907
 

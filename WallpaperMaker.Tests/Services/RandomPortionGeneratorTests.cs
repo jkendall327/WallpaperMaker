@@ -33,7 +33,12 @@ namespace WallpaperMaker.Tests
         [Fact]
         public void ShouldReturnRectangleWithSameAspectRatioAsOriginal()
         {
-            Assert.True(true);
+            // 16:9
+            var test = new Rectangle(0, 0, 1920, 1080);
+
+            var actual = _sut.GetRandomSubsection(test);
+
+            actual.AspectRatio().Should().Be(test.AspectRatio());
         }
     }
 }
