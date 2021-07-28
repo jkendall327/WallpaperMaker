@@ -17,7 +17,14 @@ namespace WallpaperMaker.Services
 
     public class ImageStore : IImageStore
     {
-        private string ImagePath(Guid guid) => Path.Combine("wwwroot", "temp") + Path.DirectorySeparatorChar + guid + ".jpg";
+        private readonly string TempFolderPath = Path.Combine("wwwroot", "temp");
+
+        private string ImagePath(Guid guid) => TempFolderPath + Path.DirectorySeparatorChar + guid + ".jpg";
+
+        public ImageStore()
+        {
+            Directory.CreateDirectory(TempFolderPath);
+        }
 
         public async Task<Guid> Store(IFormFile file)
         {

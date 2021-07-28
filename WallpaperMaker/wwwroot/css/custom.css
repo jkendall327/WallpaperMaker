@@ -1,0 +1,8 @@
+.long-button {
+    min-height: 5rem;
+    width: fit-content;
+    min-width: 30rem;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5%;
+}

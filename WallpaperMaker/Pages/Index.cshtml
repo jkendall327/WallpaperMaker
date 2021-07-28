@@ -5,23 +5,16 @@
 }
 
 <div class="text-center">
-
-    <h1 class="display-4">Welcome</h1>
-    <p>This is a test for the file-upload form.</p>
-
     <form method="post" enctype="multipart/form-data">
         <input type="file" name="file" />
         <button type="submit" asp-page-handler="Upload">Upload</button>
     </form>
 
-     <form asp-page-handler="view" method="post">
-        <button asp-page-handler="Convert" disabled=@Model.ConvertButtonDisabled>Convert</button>
-        <input type="hidden" name="uploadedId" value="@Model.UploadedImageId" />
-    </form>
+    <button class="long-button" id="convertButton" disabled=@Model.ConvertButtonDisabled>Convert</button>
 
-    @if (!string.IsNullOrEmpty(Model.UploadedImageFilepath))
+    @if(Model.UploadedImageFilepath is not null)
     {
-       <img src=@Model.UploadedImageFilepath>
+       <img id="myImage" src=@Model.UploadedImageFilepath>
     }
 
 </div>
