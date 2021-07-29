@@ -7,14 +7,16 @@
 <div class="text-center">
     <form method="post" enctype="multipart/form-data">
         <input type="file" name="file" />
-        <button type="submit" asp-page-handler="Upload">Upload</button>
+        <button type="submit" class="btn btn-primary" asp-page-handler="Upload">Upload</button>
     </form>
+</div>
 
-    <button class="long-button" id="convertButton" disabled=@Model.ConvertButtonDisabled>Convert</button>
-
+<div class=text-center>
     @if(Model.UploadedImageFilepath is not null)
     {
-       <img id="myImage" src=@Model.UploadedImageFilepath>
+       <img class="main-image" id="myImage" src=@Model.UploadedImageFilepath>
+       <p> Open in new tab for full size...</p>
     }
 
+    <button class="long-button btn btn-primary" id="convertButton" disabled=@Model.ConvertButtonDisabled>Convert</button>
 </div>

@@ -2,7 +2,23 @@
     min-height: 5rem;
     width: fit-content;
     min-width: 30rem;
-    padding: 5px;
     margin: 5px;
-    border-radius: 5%;
+}
+
+button {
+    min-width: 30px;
+    padding: 15px;
+    border-radius: 8%;
+}
+
+form {
+    padding: 15px;
+}
+
+.main-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    margin: 25px 50px 25px 100px;
 }

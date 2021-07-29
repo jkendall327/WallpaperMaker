@@ -3,21 +3,32 @@
 
 // Write your JavaScript code.
 
-var convertButton = document.getElementById("convertButton");
+const documentImage = document.querySelector("#myImage");
 
-convertButton.onclick = function ()
+const convertButton = document.querySelector("#convertButton");
+
+convertButton.onclick = async function ()
 {
-    var apiUrl = "/Convert";
-    var documentImage = document.getElementById("myImage");
+    const apiUrl = "/Convert";
 
-    var baseUrl = documentImage.src;
+    const baseUrl = documentImage.src;
 
-    fetch(apiUrl + "?url=" + baseUrl)
-        .then(response => response.blob())
-        .then(function (myBlob) {
-            var objectURL = URL.createObjectURL(myBlob);
-            documentImage.src = objectURL;
-        });
+    const response = await fetch(apiUrl + "?url=" + baseUrl);
+
+    const blob = await response.blob();
+
+    const objectURL = URL.createObjectURL(blob);
+
+    documentImage.src = objectURL;
 
     convertButton.disabled = true;
+};
+
+documentImage.onclick = function ()
+{
+    const imageURL = URL.createObjectURL(documentImage.src);
+
+    documentImage.src = null;
+
+    window.open("https://stackoverflow.com/questions/27798126/how-to-open-the-newly-created-image-in-a-new-tab", "_blank");
 };
