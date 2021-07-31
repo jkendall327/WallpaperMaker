@@ -7,7 +7,7 @@ const convertButton = document.querySelector("#convertButton");
 
 convertButton.onclick = async function ()
 {
-    const apiUrl = "/Convert";
+    const apiUrl = "api/1.0/Convert";
 
     const baseUrl = documentImage.src;
 

@@ -25,6 +25,16 @@ namespace WallpaperMaker
             services.AddControllers();
             services.AddHttpClient();
 
+            services.AddMvc();
+            services.AddApiVersioning(o =>
+            {
+                o.ReportApiVersions = true;
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.DefaultApiVersion = new(1, 0);
+
+                o.Conventions.Controller<ConvertController>().HasApiVersion(new(1, 0));
+            });
+
             services.AddSingleton<ImageModifier>();
             services.AddSingleton<IImageStore, ImageStore>();
             services.AddSingleton<RandomPortionGenerator>();
