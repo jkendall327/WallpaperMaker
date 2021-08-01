@@ -64,7 +64,7 @@ namespace WallpaperMaker
 
         private MemoryStream ConvertImage(Image image)
         {
-            var result = _modifier.Convert(image);
+            var result = _modifier.Convert(image, new Size(1920, 1080));
 
             MemoryStream stream = new MemoryStream();
 
