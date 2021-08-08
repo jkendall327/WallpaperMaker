@@ -2,16 +2,15 @@
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using WallpaperMaker.Services;
 
-namespace WallpaperMaker.Pages
+namespace WallpaperMaker.Services
 {
     public class ImageModifier
     {
         private readonly RandomPortionGenerator _generator;
 
-        private Size FinalSize = new(1920, 1080);
-        private ResizeOptions resizeOptions;
+        private Size _finalSize = new(1920, 1080);
+        private ResizeOptions? _resizeOptions;
 
         public ImageModifier(RandomPortionGenerator generator)
         {
@@ -20,20 +19,20 @@ namespace WallpaperMaker.Pages
 
         internal Image Convert(Image image, Size newSize)
         {
-            FinalSize = newSize;
+            _finalSize = newSize;
 
-            resizeOptions = new ResizeOptions()
+            _resizeOptions = new ResizeOptions
             {
-                Size = new Size(0, FinalSize.Height),
+                Size = new Size(0, _finalSize.Height),
                 Mode = ResizeMode.Pad
             };
 
             image.Mutate(x =>
             {
-                x.Resize(resizeOptions);
+                x.Resize(_resizeOptions);
             });
 
-            if (image.Width < FinalSize.Width)
+            if (image.Width < _finalSize.Width)
             {
                 MakeWallpaper(image);
             }
@@ -43,7 +42,7 @@ namespace WallpaperMaker.Pages
 
         private void MakeWallpaper(Image image)
         {
-            var originalwidth = image.Width;
+            var originalWidth = image.Width;
 
             Image leftDetail = GetDetail(image);
             Image rightDetail = GetDetail(image);
@@ -51,10 +50,10 @@ namespace WallpaperMaker.Pages
             // expand canvas
             image.Mutate(x =>
             {
-                x.Pad(FinalSize.Width, image.Height, Color.Transparent);
+                x.Pad(_finalSize.Width, image.Height, Color.Transparent);
             });
 
-            ApplyDetails(image, leftDetail, rightDetail, originalwidth);
+            ApplyDetails(image, leftDetail, rightDetail, originalWidth);
         }
 
         private static void ApplyDetails(Image image, Image leftDetail, Image rightDetail, int originalImageWidth)
@@ -69,7 +68,7 @@ namespace WallpaperMaker.Pages
             });
         }
 
-        private Size DetailSize(Image image) => new((FinalSize.Width - image.Width) / 2, FinalSize.Height);
+        private Size DetailSize(IImageInfo image) => new((_finalSize.Width - image.Width) / 2, _finalSize.Height);
 
         private Image GetDetail(Image image)
         {

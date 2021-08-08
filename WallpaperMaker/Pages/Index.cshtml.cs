@@ -11,8 +11,8 @@ namespace WallpaperMaker.Pages
     {
         private readonly IImageStore _imageStore;
 
-        public bool ConvertButtonDisabled { get; set; } = true;
-        public string UploadedImageFilepath { get; set; }
+        public bool ConvertButtonDisabled { get; private set; } = true;
+        public string? UploadedImageFilepath { get; private set; }
 
         [BindProperty(SupportsGet = true)]
         public Guid UploadedImageId { get; set; }
@@ -35,11 +35,11 @@ namespace WallpaperMaker.Pages
 
         public async Task<IActionResult> OnPostUpload(IFormFile file)
         {
-            if (file is null || !file.IsImage()) return RedirectToPage();
+            if (!file.IsImage()) return RedirectToPage();
 
-            Guid imageID = await _imageStore.Store(file);
+            var imageId = await _imageStore.Store(file);
 
-            return RedirectToPage(new { UploadedImageId = imageID });
+            return RedirectToPage(new { UploadedImageId = imageId });
         }
     }
 }

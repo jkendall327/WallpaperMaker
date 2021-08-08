@@ -4,15 +4,15 @@ using SixLabors.ImageSharp;
 using WallpaperMaker.Services;
 using Xunit;
 
-namespace WallpaperMaker.Tests
+namespace WallpaperMaker.Tests.Services
 {
     public class RandomPortionGeneratorTests
     {
-        private RandomPortionGenerator _sut => new(new Random(0));
+        private readonly RandomPortionGenerator _sut = new(new Random(0));
 
         private static int Area(Rectangle rect) => rect.Width * rect.Height;
 
-        private static Rectangle TestRectangle => new Rectangle(100, 100, 100, 100);
+        private static Rectangle TestRectangle => new(100, 100, 100, 100);
 
         [Fact]
         public void ShouldReturnDifferentRectangleThanOriginal()

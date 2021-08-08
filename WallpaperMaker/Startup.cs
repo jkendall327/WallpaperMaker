@@ -1,10 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WallpaperMaker.Pages;
 using WallpaperMaker.Services;
 
 namespace WallpaperMaker
@@ -16,7 +16,7 @@ namespace WallpaperMaker
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,9 +30,9 @@ namespace WallpaperMaker
             {
                 o.ReportApiVersions = true;
                 o.AssumeDefaultVersionWhenUnspecified = true;
-                o.DefaultApiVersion = new(1, 0);
+                o.DefaultApiVersion = new ApiVersion(1, 0);
 
-                o.Conventions.Controller<ConvertController>().HasApiVersion(new(1, 0));
+                o.Conventions.Controller<ConvertController>().HasApiVersion(new ApiVersion(1, 0));
             });
 
             services.AddSingleton<ImageModifier>();

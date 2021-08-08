@@ -8,51 +8,34 @@ namespace WallpaperMaker.Services
 {
     public interface IImageStore
     {
-        Guid Store(Image image, IFormFile originalFile);
-        Guid Store(Image image);
         Task<Guid> Store(IFormFile file);
-        Image Get(Guid imageID);
-        public string GetPath(Guid imageID);
+        public string GetPath(Guid imageId);
     }
 
     public class ImageStore : IImageStore
     {
-        private readonly string TempFolderPath = Path.Combine("wwwroot", "temp");
+        private readonly string _tempFolderPath = Path.Combine("wwwroot", "temp");
 
-        private string ImagePath(Guid guid) => TempFolderPath + Path.DirectorySeparatorChar + guid + ".jpg";
+        private string ImagePath(Guid guid) => _tempFolderPath + Path.DirectorySeparatorChar + guid + ".jpg";
 
         public ImageStore()
         {
-            Directory.CreateDirectory(TempFolderPath);
+            Directory.CreateDirectory(_tempFolderPath);
         }
 
         public async Task<Guid> Store(IFormFile file)
         {
             var image = await Image.LoadAsync(file.OpenReadStream());
-            return Store(image, file);
-        }
-
-        public Guid Store(Image image, IFormFile originalFile)
-        {
+            
             var guid = Guid.NewGuid();
 
-            image.Save(ImagePath(guid));
-            File.Delete(originalFile.FileName);
+            await image.SaveAsync(ImagePath(guid));
+            
+            File.Delete(file.FileName);
 
             return guid;
         }
-
-        public Guid Store(Image image)
-        {
-            var guid = Guid.NewGuid();
-
-            image.Save(ImagePath(guid));
-
-            return guid;
-        }
-
-        public Image Get(Guid imageID) => Image.Load(ImagePath(imageID));
-
-        public string GetPath(Guid imageID) => "temp" + Path.DirectorySeparatorChar + imageID + ".jpg";
+        
+        public string GetPath(Guid imageId) => "temp" + Path.DirectorySeparatorChar + imageId + ".jpg";
     }
 }

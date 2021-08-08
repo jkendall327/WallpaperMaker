@@ -1,19 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 using WallpaperMaker.Pages;
-using WallpaperMaker.Services;
+using WallpaperMaker.Tests.NullObjects;
 using Xunit;
 
-namespace WallpaperMaker.Tests
+namespace WallpaperMaker.Tests.Pages
 {
     public class IndexTests
     {
-        private IndexModel _sut;
+        private readonly IndexModel _sut;
 
         public IndexTests()
         {
@@ -31,18 +28,18 @@ namespace WallpaperMaker.Tests
         [Fact]
         public async Task OnPostUpload_ShouldHaveRouteValues_IfUploadedFileIsImage()
         {
-            var routeValues = await CheckFilename("succesfulFilename.jpg");
+            var routeValues = await CheckFilename("successfulFilename.jpg");
 
             routeValues.Should().NotBeNullOrEmpty();
         }
 
         private async Task<RouteValueDictionary> CheckFilename(string filename)
         {
-            var failingFile = new NullFormFile() { FileName = filename };
+            var failingFile = new NullFormFile { FileName = filename };
 
             var result = await _sut.OnPostUpload(failingFile);
 
-            return (result as RedirectToPageResult).RouteValues;
+            return (result as RedirectToPageResult)?.RouteValues;
         }
 
         [Fact]

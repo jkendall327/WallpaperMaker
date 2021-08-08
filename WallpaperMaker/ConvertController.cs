@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
-using WallpaperMaker.Pages;
+using WallpaperMaker.Services;
 
 namespace WallpaperMaker
 {
@@ -31,14 +31,14 @@ namespace WallpaperMaker
 
             if (!IsValid(url)) return StatusCode(415);
 
-            Image image = await GetRequestedImage(url);
+            Image image = await GetRequestedImage();
 
             MemoryStream stream = ConvertImage(image);
 
             return File(stream, "image/jpeg");
         }
 
-        private List<string> AcceptedHeaders = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
+        private readonly List<string> _acceptedHeaders = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
 
         private bool IsValid(string url)
         {
@@ -46,19 +46,23 @@ namespace WallpaperMaker
 
             if (!Uri.IsWellFormedUriString(url, UriKind.Absolute)) return false;
 
-            if (!_response.IsSuccessStatusCode || _response is null) return false;
+            if (_response is null || !_response.IsSuccessStatusCode) return false;
 
-            var responseType = _response.Content.Headers.ContentType.MediaType;
+            var responseType = _response?.Content.Headers.ContentType?.MediaType;
 
-            if (!AcceptedHeaders.Contains(responseType)) return false;
-
-            return true;
+            return responseType is not null && _acceptedHeaders.Contains(responseType);
         }
 
-        private async Task<Image> GetRequestedImage(string url)
+        private async Task<Image> GetRequestedImage()
         {
-            var stream = await _response.Content.ReadAsStreamAsync();
+            var task = _response?.Content.ReadAsStreamAsync();
 
+            if (task is null)
+            {
+                throw new ArgumentNullException(nameof(Content));
+            }
+
+            var stream = await task;
             return await Image.LoadAsync(stream);
         }
 
@@ -66,7 +70,7 @@ namespace WallpaperMaker
         {
             var result = _modifier.Convert(image, new Size(1920, 1080));
 
-            MemoryStream stream = new MemoryStream();
+            MemoryStream stream = new();
 
             result.Save(stream, new JpegEncoder());
 
